@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapports Périodiques - Backoffice BCI</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.44.0/dist/apexcharts.min.js"></script>
+    
+    <!-- PDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link href="rapports-periodiques-styles-v2.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Global -->
+    <header class="header-global sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <!-- Logo BCI -->
+                <div class="navbar-brand d-flex align-items-center">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iOCIgZmlsbD0iI0ZGRkZGRiIvPgo8dGV4dCB4PSIyMCIgeT0iMjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMwMDQwODAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiPkJDSTwvdGV4dD4KPC9zdmc+" alt="BCI Logo" width="32" height="32" class="me-2">
+                    <div>
+                        <h5 class="mb-0">Rapports Périodiques</h5>
+                        <small class="text-white-50" id="contextInfo">Synthèse consolidée - Juin 2025</small>
+                    </div>
+                </div>
+
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="d-none d-lg-block">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="#" class="text-white-50">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="#" class="text-white-50">Pilotage</a></li>
+                        <li class="breadcrumb-item"><a href="#" class="text-white-50">Rapports</a></li>
+                        <li class="breadcrumb-item active text-white">Périodiques</li>
+                    </ol>
+                </nav>
+
+                <!-- Actions header -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Notifications -->
+                    <div class="position-relative">
+                        <button class="btn btn-outline-light btn-sm position-relative" id="notificationBtn">
+                            <i class="bi bi-bell"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge">3</span>
+                        </button>
+                    </div>
+
+                    <!-- Aide -->
+                    <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#helpModal" title="Aide contextuelle">
+                        <i class="bi bi-question-circle"></i>
+                    </button>
+
+                    <!-- Documentation -->
+                    <button class="btn btn-outline-light btn-sm" title="Documentation">
+                        <i class="bi bi-book"></i>
+                    </button>
+
+                    <!-- Profil utilisateur -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> M.Ndaw
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal"><i class="bi bi-person"></i> Mon Profil</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Préférences</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i> Déconnexion</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Zone d'actions rapides -->
+    <section class="actions-header bg-light border-bottom">
+        <div class="container-fluid">
+            <div class="row align-items-center py-3">
+                <div class="col-md-6">
+                    <h4 class="mb-0 text-primary">RAPPORTS PÉRIODIQUES</h4>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="btn-toolbar gap-2 justify-content-end">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#generateReportModal">
+                            <i class="bi bi-plus-circle"></i> Générer un rapport
+                        </button>
+                        <button class="btn btn-primary" id="exportAllBtn">
+                            <i class="bi bi-download"></i> Exporter tous
+                        </button>
+                        <button class="btn btn-outline-secondary" id="resetFiltersBtn">
+                            <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+                        </button>
+                        <div class="input-group" style="width: 250px;">
+                            <input type="text" class="form-control" placeholder="Rechercher..." id="quickSearchInput">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Zone de filtres -->
+    <section class="filters-section bg-white border-bottom">
+        <div class="container-fluid">
+            <div class="row py-3">
+                <div class="col-12">
+                    <div class="card border-0">
+                        <div class="card-header bg-transparent">
+                            <h6 class="mb-0">
+                                <i class="bi bi-funnel"></i> Filtres de recherche
+                                <button class="btn btn-sm btn-outline-primary float-end" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse">
+                                    <i class="bi bi-chevron-down"></i>
+                                </button>
+                            </h6>
+                        </div>
+                        <div class="collapse show" id="filtersCollapse">
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <!-- Première ligne de filtres -->
+                                    <div class="col-md-2">
+                                        <label class="form-label">Période</label>
+                                        <select class="form-select" id="periodFilter">
+                                            <option value="">Toutes</option>
+                                            <option value="2025-06" selected>Juin 2025</option>
+                                            <option value="2025-05">Mai 2025</option>
+                                            <option value="2025-04">Avril 2025</option>
+                                            <option value="custom">Personnalisée...</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Type de rapport</label>
+                                        <select class="form-select" id="typeFilter">
+                                            <option value="">Tous types</option>
+                                            <option value="synthese">Synthèse</option>
+                                            <option value="sla">SLA</option>
+                                            <option value="incidents">Incidents</option>
+                                            <option value="conformite">Conformité</option>
+                                            <option value="transactions">Transactions</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Entreprise</label>
+                                        <input type="text" class="form-control" placeholder="Rechercher..." id="enterpriseFilter" list="enterpriseList">
+                                        <datalist id="enterpriseList">
+                                            <option value="Groupe AMANA">
+                                            <option value="SONOCO">
+                                            <option value="BCI Entreprises">
+                                        </datalist>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Statut</label>
+                                        <select class="form-select" id="statusFilter">
+                                            <option value="">Tous</option>
+                                            <option value="ok">OK</option>
+                                            <option value="nok">NOK</option>
+                                            <option value="pending">En attente</option>
+                                            <option value="processing">En cours</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Utilisateur</label>
+                                        <input type="text" class="form-control" placeholder="Nom ou matricule" id="userFilter">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Format</label>
+                                        <div class="form-check-group">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="formatPdf" value="pdf">
+                                                <label class="form-check-label" for="formatPdf">PDF</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="formatExcel" value="excel">
+                                                <label class="form-check-label" for="formatExcel">Excel</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Deuxième ligne de filtres -->
+                                <div class="row g-3 mt-2">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Montant (GNF)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" placeholder="Min" id="amountMin">
+                                            <span class="input-group-text">-</span>
+                                            <input type="number" class="form-control" placeholder="Max" id="amountMax">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Profil cible</label>
+                                        <select class="form-select" id="profileFilter">
+                                            <option value="">Tous profils</option>
+                                            <option value="support">Support</option>
+                                            <option value="manager">Manager</option>
+                                            <option value="audit">Audit</option>
+                                            <option value="conformite">Conformité</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-end gap-2">
+                                        <button class="btn btn-primary" id="applyFiltersBtn">
+                                            <i class="bi bi-funnel"></i> Appliquer les filtres
+                                        </button>
+                                        <button class="btn btn-outline-secondary" id="resetFiltersBtn2">
+                                            <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+                                        </button>
+                                        <button class="btn btn-outline-success" id="saveFiltersBtn">
+                                            <i class="bi bi-star"></i> Enregistrer
+                                        </button>
+                                        <button class="btn btn-outline-primary" id="exportFilteredBtn">
+                                            <i class="bi bi-download"></i> Exporter résultats
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filtres actifs -->
+    <section class="active-filters" id="activeFiltersSection" style="display: none;">
+        <div class="container-fluid">
+            <div class="row py-2">
+                <div class="col-12">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small">Filtres actifs :</span>
+                        <div id="activeFiltersTags" class="d-flex gap-1 flex-wrap"></div>
+                        <button class="btn btn-sm btn-outline-danger" id="clearFiltersBtn">
+                            <i class="bi bi-x"></i> Effacer tout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Zone d'incidents critiques -->
+    <section class="incidents-section" id="incidentsSection" style="display: none;">
+        <div class="container-fluid">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div class="flex-grow-1">
+                        <strong>3 incidents détectés</strong> - Dernier : SLA Juin 2025 à 12:23 - Niveau critique
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#incidentLogsModal">
+                            <i class="bi bi-file-text"></i> Voir logs
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#notifyIncidentModal">
+                            <i class="bi bi-envelope"></i> Notifier
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" id="relaunchIncidentBtn">
+                            <i class="bi bi-arrow-repeat"></i> Relancer
+                        </button>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tableau principal -->
+    <main class="main-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Liste des rapports</h6>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-primary" id="totalCount">7 rapports</span>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-secondary" id="tableViewBtn">
+                                        <i class="bi bi-table"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" id="cardViewBtn">
+                                        <i class="bi bi-grid"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <!-- Table responsive -->
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" id="reportsTable">
+                                    <thead class="table-light sticky-top">
+                                        <tr>
+                                            <th>
+                                                <input type="checkbox" class="form-check-input" id="selectAllReports">
+                                            </th>
+                                            <th data-sort="period">Période <i class="bi bi-arrow-down-up"></i></th>
+                                            <th data-sort="type">Type <i class="bi bi-arrow-down-up"></i></th>
+                                            <th data-sort="generated">Généré le <i class="bi bi-arrow-down-up"></i></th>
+                                            <th data-sort="transactions">Txns <i class="bi bi-arrow-down-up"></i></th>
+                                            <th data-sort="amount">Montant <i class="bi bi-arrow-down-up"></i></th>
+                                            <th data-sort="status">Statut <i class="bi bi-arrow-down-up"></i></th>
+                                            <th>Formats</th>
+                                            <th data-sort="lastAccess">Dernier accès <i class="bi bi-arrow-down-up"></i></th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reportsTableBody">
+                                        <!-- Les données seront chargées dynamiquement -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Zone vide -->
+                            <div id="emptyState" class="text-center py-5" style="display: none;">
+                                <div class="mb-3">
+                                    <i class="bi bi-folder-x display-1 text-muted"></i>
+                                </div>
+                                <h5 class="text-muted">Aucun rapport trouvé</h5>
+                                <p class="text-muted">Modifiez vos filtres ou générez un nouveau rapport</p>
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary" id="modifyFiltersBtn">
+                                        <i class="bi bi-funnel"></i> Modifier les filtres
+                                    </button>
+                                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#generateReportModal">
+                                        <i class="bi bi-plus"></i> Générer un rapport
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                                <div class="text-muted small">
+                                    Affichage de <span id="showingFrom">1</span> à <span id="showingTo">7</span> sur <span id="totalItems">7</span> éléments
+                                </div>
+                                <nav aria-label="Pagination">
+                                    <ul class="pagination pagination-sm mb-0" id="pagination">
+                                        <!-- Pagination sera générée dynamiquement -->
+                                    </ul>
+                                </nav>
+                                <div>
+                                    <select class="form-select form-select-sm" id="itemsPerPage" style="width: auto;">
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bloc Historique des actions -->
+    <section class="history-section mt-4">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-clock-history"></i> Historique des actions
+                        <button class="btn btn-sm btn-outline-primary float-end" type="button" data-bs-toggle="collapse" data-bs-target="#historyCollapse">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </h6>
+                </div>
+                <div class="collapse" id="historyCollapse">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Date/Heure</th>
+                                        <th>Action</th>
+                                        <th>Utilisateur</th>
+                                        <th>Rapport concerné</th>
+                                        <th>Résultat</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody">
+                                    <!-- Données chargées dynamiquement -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer bg-light border-top mt-5">
+        <div class="container-fluid">
+            <div class="row py-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted small">Backoffice BCI v1.2.1</span>
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle"></i> Tous les services opérationnels
+                        </span>
+                        <span class="text-muted small">Dernière synchro : <span id="lastSync">10h14 UTC</span></span>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="d-flex justify-content-end gap-3">
+                        <a href="#" class="text-decoration-none small">RGPD</a>
+                        <a href="#" class="text-decoration-none small">Conditions</a>
+                        <a href="#" class="text-decoration-none small">Documentation</a>
+                        <a href="#" class="text-decoration-none small">Support</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALES -->
+
+    <!-- 1. Modale Génération Manuelle de Rapport -->
+    <div class="modal fade" id="generateReportModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle"></i> Génération Manuelle d'un Rapport
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="generateReportForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Période du rapport</label>
+                                <input type="month" class="form-control" id="reportPeriod" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Type de rapport</label>
+                                <select class="form-select" id="reportType" required>
+                                    <option value="">Sélectionner...</option>
+                                    <option value="synthese">Synthèse</option>
+                                    <option value="sla">SLA</option>
+                                    <option value="transactions">Transactions</option>
+                                    <option value="incidents">Incidents</option>
+                                    <option value="conformite">Conformité</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Format(s) de sortie</label>
+                                <div class="form-check-group">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="genFormatPdf" value="pdf" checked>
+                                        <label class="form-check-label" for="genFormatPdf">PDF</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="genFormatExcel" value="excel">
+                                        <label class="form-check-label" for="genFormatExcel">Excel</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="genFormatCsv" value="csv">
+                                        <label class="form-check-label" for="genFormatCsv">CSV</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Entreprise cible</label>
+                                <input type="text" class="form-control" id="reportTarget" placeholder="Auto-complétion..." list="targetList">
+                                <datalist id="targetList">
+                                    <option value="Toutes les entreprises">
+                                    <option value="Groupe AMANA">
+                                    <option value="SONOCO">
+                                    <option value="BCI Entreprises">
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Livraison</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="delivery" id="deliveryImmediate" value="immediate" checked>
+                                    <label class="form-check-label" for="deliveryImmediate">Immédiate</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="delivery" id="deliveryScheduled" value="scheduled">
+                                    <label class="form-check-label" for="deliveryScheduled">Planifiée</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Niveau de visibilité</label>
+                                <select class="form-select" id="reportVisibility">
+                                    <option value="standard">Standard</option>
+                                    <option value="critical">Critique</option>
+                                    <option value="confidential">Confidentiel</option>
+                                    <option value="audit">Réservé audit</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Paramètres avancés -->
+                        <div class="mt-4">
+                            <h6>
+                                <button class="btn btn-link p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#advancedParams">
+                                    <i class="bi bi-chevron-right"></i> Paramètres avancés
+                                </button>
+                            </h6>
+                            <div class="collapse" id="advancedParams">
+                                <div class="row g-3 mt-2">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="includeLogs">
+                                            <label class="form-check-label" for="includeLogs">Inclure logs techniques</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="anonymizeData">
+                                            <label class="form-check-label" for="anonymizeData">Anonymiser données</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="addMetadata">
+                                            <label class="form-check-label" for="addMetadata">Ajouter métadonnées XML</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="includeCharts">
+                                            <label class="form-check-label" for="includeCharts">Inclure graphiques dynamiques</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i> Annuler
+                    </button>
+                    <button type="button" class="btn btn-success" id="confirmGenerateBtn">
+                        <i class="bi bi-play-circle"></i> Générer le rapport
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Modale Visualisation des Logs -->
+    <div class="modal fade" id="logsModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="bi bi-file-text"></i> Logs Techniques - SLA Juin 2025
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <strong>Date de génération :</strong> 01/07/2025 12:45
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Statut :</strong> <span class="badge bg-danger">ÉCHEC (Timeout)</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Code rapport :</strong> RPT_SLA_0625_X394
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Utilisateur :</strong> it.admin@bci.gn
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6>Stack Trace détaillé :</h6>
+                    <div class="bg-dark text-light p-3 rounded">
+                        <pre class="mb-0"><code>java.sql.SQLException: Error executing stored procedure
+    at com.bci.core.reporting.BatchEngine.run(BatchEngine.java:224)
+    at com.bci.core.framework.CoreDispatcher.execute(CoreDispatcher.java:142)
+Caused by: ConnectionTimeoutException: Service BCI-JDBC unreachable (10.2.3.78:1534)</code></pre>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>
+                            <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#contextualLogs">
+                                <i class="bi bi-chevron-right"></i> Logs contextuels
+                            </button>
+                        </h6>
+                        <div class="collapse" id="contextualLogs">
+                            <div class="row g-2 mt-2">
+                                <div class="col-md-6">
+                                    <small><strong>IP serveur :</strong> 10.2.3.78</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small><strong>Job ID :</strong> JOB_RP_0625_03</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small><strong>Durée exécution :</strong> 37.42 s</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <small><strong>Code retour :</strong> ERR_504_TIMEOUT</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6>Filtrage :</h6>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="showErrors" checked>
+                            <label class="form-check-label" for="showErrors">Erreurs</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="showWarnings" checked>
+                            <label class="form-check-label" for="showWarnings">Avertissements</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="showInfo">
+                            <label class="form-check-label" for="showInfo">Infos</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="relaunchReportBtn">
+                        <i class="bi bi-arrow-repeat"></i> Relancer avec suivi
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" id="exportLogsBtn">
+                        <i class="bi bi-download"></i> Exporter Logs
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" id="notifyConformityBtn">
+                        <i class="bi bi-envelope"></i> Notifier Conformité
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Modale Partage Sécurisé -->
+    <div class="modal fade" id="shareModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-share"></i> Partager un Rapport de Manière Sécurisée
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="shareReportForm">
+                        <div class="mb-3">
+                            <label class="form-label">Rapport concerné</label>
+                            <input type="text" class="form-control" id="shareReportName" readonly>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Destinataires (email)</label>
+                            <div class="input-group">
+                                <input type="email" class="form-control" id="recipientEmail" placeholder="email@example.com">
+                                <button class="btn btn-outline-secondary" type="button" id="addRecipientBtn">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <div id="recipientsList" class="mt-2"></div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Rôle du destinataire</label>
+                                <select class="form-select" id="recipientRole">
+                                    <option value="internal">Interne</option>
+                                    <option value="audit">Audit</option>
+                                    <option value="external">Externe autorisé</option>
+                                    <option value="direction">Direction</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Durée de validité</label>
+                                <select class="form-select" id="linkValidity">
+                                    <option value="24h">24 heures</option>
+                                    <option value="72h" selected>72 heures</option>
+                                    <option value="7d">7 jours</option>
+                                    <option value="custom">Personnalisée</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <label class="form-label">Méthode de protection</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="requireOtp" checked>
+                                <label class="form-check-label" for="requireOtp">OTP requis</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="requirePassword">
+                                <label class="form-check-label" for="requirePassword">Mot de passe</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <label class="form-label">Format à partager</label>
+                            <div class="form-check-group">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="sharePdf" checked>
+                                    <label class="form-check-label" for="sharePdf">PDF</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="shareExcel">
+                                    <label class="form-check-label" for="shareExcel">Excel</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="shareZip">
+                                    <label class="form-check-label" for="shareZip">ZIP signé</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <label class="form-label">Message d'accompagnement</label>
+                            <textarea class="form-control" id="shareMessage" rows="3" placeholder="Message optionnel..."></textarea>
+                        </div>
+                        
+                        <!-- Options avancées -->
+                        <div class="mt-3">
+                            <h6>
+                                <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#shareAdvancedOptions">
+                                    <i class="bi bi-chevron-right"></i> Options avancées de traçabilité
+                                </button>
+                            </h6>
+                            <div class="collapse" id="shareAdvancedOptions">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="notifyFirstOpen">
+                                    <label class="form-check-label" for="notifyFirstOpen">Notifier à la première ouverture</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="logIpDevice">
+                                    <label class="form-check-label" for="logIpDevice">Journaliser IP + Device utilisateur</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="generateSha256">
+                                    <label class="form-check-label" for="generateSha256">Générer empreinte SHA256</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="limitDownloads">
+                                    <label class="form-check-label" for="limitDownloads">Limiter le nombre de téléchargements à : 
+                                        <input type="number" class="form-control form-control-sm d-inline-block" style="width: 60px;" value="1" min="1" max="10">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i> Annuler
+                    </button>
+                    <button type="button" class="btn btn-info" id="confirmShareBtn">
+                        <i class="bi bi-share"></i> Générer et partager
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Modale Confirmation de Suppression -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle"></i> Confirmation de Suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Cette action supprimera définitivement le rapport ET l'ensemble de ses métadonnées associées.
+                        Cette opération ne pourra être annulée.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Rapport :</strong> <span id="deleteReportName"></span><br>
+                        <strong>Code :</strong> <span id="deleteReportCode"></span><br>
+                        <strong>Date de génération :</strong> <span id="deleteReportDate"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Motif de suppression (obligatoire)</label>
+                        <textarea class="form-control" id="deleteReason" rows="3" placeholder="Veuillez préciser le motif..." required></textarea>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="confirmDeletion" required>
+                        <label class="form-check-label" for="confirmDeletion">
+                            Je confirme vouloir supprimer définitivement ce rapport
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i> Annuler
+                    </button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn" disabled>
+                        <i class="bi bi-trash"></i> Supprimer définitivement
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Modale Aide Contextuelle -->
+    <div class="modal fade" id="helpModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-question-circle"></i> Aide Contextuelle - Rapports Périodiques
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <p><strong>Page active :</strong> Tableau des rapports filtrés par période</p>
+                        <p><strong>Profil identifié :</strong> Superviseur Conformité - Accès critique</p>
+                    </div>
+                    
+                    <h6>Recommandations contextuelles :</h6>
+                    <ul>
+                        <li>Pour ajuster la période, utilisez les filtres en haut de page</li>
+                        <li>Cliquez sur "Logs" pour visualiser les erreurs techniques</li>
+                        <li>Le bouton "Exporter tous" génère un lot multi-format</li>
+                        <li>Accédez au profil de tout utilisateur en cliquant sur son nom</li>
+                    </ul>
+                    
+                    <div class="mt-4">
+                        <h6>Rubriques connexes :</h6>
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <i class="bi bi-arrow-right"></i> Génération manuelle d'un rapport
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <i class="bi bi-arrow-right"></i> Diffusion sécurisée et niveaux de confidentialité
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <i class="bi bi-arrow-right"></i> Lecture des statuts d'exécution
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <i class="bi bi-arrow-right"></i> Historique des actions sur les rapports
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Rechercher dans l'aide...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="bi bi-book"></i> Voir toute la documentation
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="bi bi-envelope"></i> Contacter le support
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Modale Profil Utilisateur -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-circle"></i> Profil Utilisateur - Détail Complet
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <strong>Nom complet :</strong> Moussa Ndaw
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Email :</strong> m.ndaw@bci.gn
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Département :</strong> Conformité - Cellule Supervision
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Rôle(s) :</strong> 
+                            <span class="badge bg-primary me-1">Manager</span>
+                            <span class="badge bg-success me-1">Auditeur</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Niveau de privilège :</strong> Critique
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Statut :</strong> <span class="badge bg-success">Actif</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Dernière connexion :</strong> 04/07/2025 à 08:31
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Session actuelle :</strong> 01h52min
+                        </div>
+                        <div class="col-md-6">
+                            <strong>IP :</strong> 10.34.29.11 - VPN BCI
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Poste :</strong> PC fixe #WS112-BUREAU
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6>Historique récent (5 dernières actions) :</h6>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Génération rapport SLA Juin 2025</h6>
+                                <small>04/07/2025 08:32</small>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Notification incident #INC-32874</h6>
+                                <small>03/07/2025 15:44</small>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Suppression rapport RPT_0525_X329</h6>
+                                <small>02/07/2025 17:29</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="bi bi-folder"></i> Accéder au module Audit Sécurité
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. Modale Authentification Session Critique -->
+    <div class="modal fade" id="authModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="bi bi-shield-lock"></i> Vérification d'Identité Supplémentaire
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>Action demandée :</strong> <span id="authActionName"></span>
+                    </div>
+                    
+                    <form id="authForm">
+                        <div class="mb-3">
+                            <label class="form-label">Mot de passe BCI</label>
+                            <input type="password" class="form-control" id="authPassword" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Code OTP (email / app mobile)</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="authOtp" maxlength="6" pattern="[0-9]{6}" required>
+                                <button class="btn btn-outline-secondary" type="button" id="resendOtpBtn">Renvoyer</button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Motif de l'action (obligatoire)</label>
+                            <textarea class="form-control" id="authReason" rows="2" placeholder="Justification..." required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="authCancelBtn">
+                        <i class="bi bi-x"></i> Annuler
+                    </button>
+                    <button type="button" class="btn btn-warning" id="authValidateBtn">
+                        <i class="bi bi-check-circle"></i> Valider
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast pour notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="bi bi-info-circle me-2 text-primary"></i>
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="toastBody">
+                <!-- Message dynamique -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="rapports-periodiques-styles-v2.js"></script>
+</body>
+                      </html>
